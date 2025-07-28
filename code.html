@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            transition: all 0.5s ease;
+        }
+        
+        .clock-container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 150, 255, 0.8), 
+                            0 0 30px rgba(0, 150, 255, 0.6);
+            }
+        }
+        
+        .time {
+            font-size: 5rem;
+            font-weight: 600;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .date {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .colon {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .time {
+                font-size: 3rem;
+            }
+            .date {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .time {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+            button {
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="date" id="date"></div>
+        <div class="time" id="time"></div>
+        <div class="controls">
+            <button id="formatToggle">Switch to 24-hour</button>
+            <button id="themeToggle">Dark Theme</button>
+        </div>
+    </div>
+
+    <script>
+        let is24HourFormat = false;
+        let isDarkTheme = true;
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Time
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            let ampm = '';
+            if (!is24HourFormat) {
+                ampm = hours >= 12 ? ' PM' : ' AM';
+                hours = hours % 12 || 12;
+            }
+            
+            const timeString = `${hours.toString().padStart(2, '0')}<span class="colon">:</span>${minutes}<span class="colon">:</span>${seconds}${ampm}`;
+            document.getElementById('time').innerHTML = timeString;
+            
+            // Date
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const dateNum = now.getDate();
+            const year = now.getFullYear();
+            
+            const dateString = `${dayName}, ${monthName} ${dateNum}, ${year}`;
+            document.getElementById('date').textContent = dateString;
+        }
+        
+        // Button event listeners
+        document.getElementById('formatToggle').addEventListener('click', function() {
+            is24HourFormat = !is24HourFormat;
+            this.textContent = is24HourFormat ? 'Switch to 12-hour' : 'Switch to 24-hour';
+            updateClock();
+        });
+        
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            isDarkTheme = !isDarkTheme;
+            
+            if (isDarkTheme) {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e)';
+                this.textContent = 'Dark Theme';
+            } else {
+                document.body.style.background = 'linear-gradient(135deg, #e0e0e0, #f5f5f5)';
+                document.body.style.color = '#333';
+                this.textContent = 'Light Theme';
+            }
+        });
+        
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
+
